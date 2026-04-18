@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings – Library</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .page-wrap { padding: 28px; max-width: 900px; }
+        .page-title { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+        .page-sub { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 28px; }
+
+        .settings-section {
+            background: rgba(255,255,255,0.11);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 18px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .section-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-header i {
+            width: 32px;
+            height: 32px;
+            background: rgba(167,139,250,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c4b5fd;
+            font-size: 14px;
+        }
+        .section-header h3 {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .section-header p {
+            color: rgba(255,255,255,0.45);
+            font-size: 12px;
+            margin: 2px 0 0;
+        }
+        .section-body { padding: 22px 24px; }
+
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 18px;
+        }
+        @media(max-width:700px) {
+            .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+        }
+
+        .field { display: flex; flex-direction: column; gap: 7px; }
+        .field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .field input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s, background 0.2s;
+        }
+        .field input:focus {
+            border-color: #a78bfa;
+            background: rgba(167,139,250,0.12);
+        }
+        .field input::placeholder { color: rgba(255,255,255,0.35); }
+
+        /* TOGGLE SWITCH */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .toggle-info h4 { color: #fff; font-size: 14px; font-weight: 600; margin: 0 0 3px; }
+        .toggle-info p { color: rgba(255,255,255,0.45); font-size: 12px; margin: 0; }
+        .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .toggle-slider:before {
+            content: "";
+            position: absolute;
+            width: 18px; height: 18px;
+            left: 3px; top: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .toggle-switch input:checked + .toggle-slider { background: #7c3aed; }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+        /* SAVE BUTTON */
+        .btn-save {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: #fff;
+            border: none;
+            padding: 11px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        .btn-save:hover { opacity: 0.88; transform: translateY(-1px); }
+
+        .btn-danger {
+            background: rgba(239,68,68,0.2);
+            color: #f87171;
+            border: 1px solid rgba(239,68,68,0.3);
+            padding: 11px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-danger:hover { background: rgba(239,68,68,0.35); }
+
+        .btn-password {
+            background: rgba(99,102,241,0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99,102,241,0.3);
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 16px;
+        }
+        .btn-password:hover { background: rgba(99,102,241,0.35); }
+
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        #msg {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: none;
+        }
+        #msg.success { background: rgba(16,185,129,0.2); color: #34d399; display: inline-block; }
+        #msg.error { background: rgba(239,68,68,0.2); color: #f87171; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>📚 Library</h2>
+    <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="books.html"><i class="fas fa-book"></i> Books</a></li>
+        <li><a href="students.html"><i class="fas fa-users"></i> Students</a></li>
+        <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+        <li><a href="fines.html"><i class="fas fa-money-bill"></i> Fines</a></li>
+        <li><a href="settings.html" style="color:#a78bfa"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <h2>Settings</h2>
+        <div class="profile">Admin</div>
+        <button onclick="logout()" style="background:#ef4444;color:#fff">Logout</button>
+    </div>
+
+    <div class="page-wrap">
+        <div class="page-title">Settings</div>
+        <div class="page-sub">Manage your profile, library info, and preferences</div>
+
+        <!-- PROFILE -->
+        <div class="settings-section">
+            <div class="section-header">
+                <i class="fas fa-user"></i>
+                <div>
+                    <h3>Admin Profile</h3>
+                    <p>Your personal account details</p>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="form-grid-2">
+                    <div class="field">
+                        <label>Full Name</label>
+                        <input type="text" id="adminName" placeholder="Admin name">
+                    </div>
+                    <div class="field">
+                        <label>Email Address</label>
+                        <input type="email" id="adminEmail" placeholder="admin@email.com">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LIBRARY INFO -->
+        <div class="settings-section">
+            <div class="section-header">
+                <i class="fas fa-building"></i>
+                <div>
+                    <h3>Library Information</h3>
+                    <p>Details about your library</p>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="form-grid-3">
+                    <div class="field">
+                        <label>Library Name</label>
+                        <input type="text" id="libraryName" placeholder="e.g. City Public Library">
+                    </div>
+                    <div class="field">
+                        <label>Address</label>
+                        <input type="text" id="libraryAddress" placeholder="Street, City">
+                    </div>
+                    <div class="field">
+                        <label>Contact Number</label>
+                        <input type="text" id="libraryContact" placeholder="+91 98765 43210">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ISSUE RULES -->
+        <div class="settings-section">
+            <div class="section-header">
+                <i class="fas fa-sliders-h"></i>
+                <div>
+                    <h3>Issue Rules</h3>
+                    <p>Configure book return and fine policies</p>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="form-grid-2">
+                    <div class="field">
+                        <label>Max Return Days</label>
+                        <input type="number" id="maxDays" placeholder="14" min="1">
+                    </div>
+                    <div class="field">
+                        <label>Fine Per Day (₹)</label>
+                        <input type="number" id="finePerDay" placeholder="5" min="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PREFERENCES -->
+        <div class="settings-section">
+            <div class="section-header">
+                <i class="fas fa-palette"></i>
+                <div>
+                    <h3>Preferences</h3>
+                    <p>Appearance and notification settings</p>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="toggle-row">
+                    <div class="toggle-info">
+                        <h4>Dark Mode</h4>
+                        <p>Switch to a darker interface theme</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="darkMode">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <div class="toggle-info">
+                        <h4>Enable Notifications</h4>
+                        <p>Get alerts for overdue books</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifyToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHANGE PASSWORD -->
+        <div class="settings-section">
+            <div class="section-header">
+                <i class="fas fa-lock"></i>
+                <div>
+                    <h3>Change Password</h3>
+                    <p>Update your admin login password</p>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="form-grid-2">
+                    <div class="field">
+                        <label>Current Password</label>
+                        <input type="password" id="oldPass" placeholder="Enter current password">
+                    </div>
+                    <div class="field">
+                        <label>New Password</label>
+                        <input type="password" id="newPass" placeholder="Enter new password">
+                    </div>
+                </div>
+                <button class="btn-password" onclick="changePassword()"><i class="fas fa-key"></i> Update Password</button>
+            </div>
+        </div>
+
+        <!-- ACTION BAR -->
+        <div class="action-bar">
+            <button class="btn-save" onclick="saveSettings()"><i class="fas fa-save"></i> Save All Changes</button>
+            <button class="btn-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <span id="msg"></span>
+        </div>
+    </div>
+</div>
+
+<script src="settings.js"></script>
+<script>
+function logout() {
+    sessionStorage.removeItem("isLoggedIn");
+    window.location.href = "login.html";
+}
+
+// Override showMsg to use class-based styling
+function showMsg(text, color) {
+    const msg = document.getElementById("msg");
+    msg.textContent = text;
+    msg.className = color === "green" ? "success" : "error";
+    setTimeout(() => { msg.className = ""; msg.textContent = ""; }, 4000);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Login – Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Nunito", sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Animated background particles */
+.bg-circles {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.bg-circles span {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(167,139,250,0.08);
+  animation: float 8s infinite ease-in-out;
+}
+.bg-circles span:nth-child(1) { width: 300px; height: 300px; top: -80px; left: -80px; animation-delay: 0s; }
+.bg-circles span:nth-child(2) { width: 200px; height: 200px; bottom: 50px; right: 80px; animation-delay: 2s; }
+.bg-circles span:nth-child(3) { width: 150px; height: 150px; top: 50%; right: -50px; animation-delay: 4s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+.login-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  animation: slideUp 0.6s ease both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.login-card {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 24px;
+  padding: 40px 36px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+}
+
+.logo-area {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.logo-icon {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  font-size: 28px;
+  box-shadow: 0 8px 24px rgba(124,58,237,0.4);
+}
+.logo-area h1 {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.logo-area p {
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(167,139,250,0.2);
+  border: 1px solid rgba(167,139,250,0.35);
+  color: #c4b5fd;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+.form-label {
+  display: block;
+  color: rgba(255,255,255,0.6);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 7px;
+}
+.input-wrap {
+  position: relative;
+}
+.input-wrap i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.35);
+  font-size: 14px;
+}
+.form-input {
+  width: 100%;
+  padding: 12px 14px 12px 40px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  color: #fff;
+  font-family: "Nunito", sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
+}
+.form-input::placeholder { color: rgba(255,255,255,0.35); }
+.form-input:focus {
+  border-color: #a78bfa;
+  background: rgba(167,139,250,0.12);
+}
+
+.error-msg {
+  display: none;
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: "Nunito", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+}
+.btn-login:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,58,237,0.5); }
+.btn-login:active { transform: translateY(0); }
+
+.divider {
+  text-align: center;
+  color: rgba(255,255,255,0.3);
+  font-size: 12px;
+  margin: 20px 0;
+  position: relative;
+}
+.divider::before, .divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 42%;
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+}
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+.admin-link {
+  display: block;
+  text-align: center;
+  color: rgba(255,255,255,0.45);
+  font-size: 13px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.admin-link span { color: #a78bfa; font-weight: 700; }
+.admin-link:hover { color: rgba(255,255,255,0.7); }
+
+.default-creds {
+  margin-top: 16px;
+  text-align: center;
+  color: rgba(255,255,255,0.35);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.default-creds strong { color: rgba(255,255,255,0.55); }
+
+.loading-spinner {
+  display: none;
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="bg-circles">
+  <span></span><span></span><span></span>
+</div>
+
+<div class="login-wrapper">
+  <div class="login-card">
+
+    <div class="logo-area">
+      <div class="logo-icon">📚</div>
+      <h1>Library Portal</h1>
+      <p>Sign in to your student account</p>
+      <div class="role-badge"><i class="fas fa-user-graduate"></i> Student Access</div>
+    </div>
+
+    <div id="errorMsg" class="error-msg">
+      <i class="fas fa-exclamation-circle"></i> <span id="errorText">Invalid credentials</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Roll Number / Email</label>
+      <div class="input-wrap">
+        <i class="fas fa-id-card"></i>
+        <input type="text" id="studentId" class="form-input" placeholder="Enter your roll number or email">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="input-wrap">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="studentPassword" class="form-input" placeholder="Enter your password">
+      </div>
+    </div>
+
+    <button class="btn-login" id="loginBtn" onclick="studentLogin()">
+      <span id="btnText">Sign In</span>
+      <div class="loading-spinner" id="spinner"></div>
+    </button>
+
+    <div class="divider">or</div>
+    <a href="login.html" class="admin-link">Admin? <span>Sign in here →</span></a>
+    <a href="librarian_login.html" class="admin-link" style="margin-top:8px;">Librarian? <span>Sign in here →</span></a>
+
+    <div class="default-creds">
+      Default password: <strong>student123</strong><br>
+      (Use your Roll Number + password to login)
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = "http://localhost:3000/api";
+
+async function studentLogin() {
+  const id       = document.getElementById("studentId").value.trim();
+  const password = document.getElementById("studentPassword").value.trim();
+  const errorDiv = document.getElementById("errorMsg");
+  const errText  = document.getElementById("errorText");
+
+  errorDiv.style.display = "none";
+
+  if (!id || !password) {
+    errText.textContent = "Please fill in both fields";
+    errorDiv.style.display = "block";
+    return;
+  }
+
+  // Show loading
+  document.getElementById("btnText").style.display = "none";
+  document.getElementById("spinner").style.display = "block";
+  document.getElementById("loginBtn").disabled = true;
+
+  try {
+    const res = await fetch(`${API}/student-login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: id, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      // Store student session data
+      sessionStorage.setItem("studentLoggedIn", "true");
+      sessionStorage.setItem("studentName", data.name || id);
+      sessionStorage.setItem("studentRollNo", data.roll_no || id);
+      sessionStorage.setItem("studentId", String(data.id || ""));
+      sessionStorage.setItem("studentEmail", data.email || "");
+      window.location.href = "student_dashboard.html";
+    } else {
+      errText.textContent = data.message || "Invalid roll number or password";
+      errorDiv.style.display = "block";
+    }
+  } catch (err) {
+    errText.textContent = "Cannot connect to server. Make sure node server.js is running.";
+    errorDiv.style.display = "block";
+  } finally {
+    document.getElementById("btnText").style.display = "inline";
+    document.getElementById("spinner").style.display = "none";
+    document.getElementById("loginBtn").disabled = false;
+  }
+}
+
+document.addEventListener("keydown", e => { if (e.key === "Enter") studentLogin(); });
+</script>
+</body>
+</html>

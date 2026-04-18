@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Library Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="style.css">
+
+<!-- Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>📚 Library</h2>
+    <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="books.html"><i class="fas fa-book"></i> Books</a></li>
+        <li><a href="students.html"><i class="fas fa-users"></i> Students</a></li>
+        <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+        <li><a href="fines.html"><i class="fas fa-money-bill"></i> Fines</a></li>
+        <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+</div>
+
+<div class="main">
+
+    <div class="topbar">
+        <h2>Dashboard</h2>
+        <div class="profile">Admin</div>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <!-- ================= CARDS ================= -->
+    <div class="cards">
+
+        <div class="card" onclick="goTo('books.html')">
+            <i class="fas fa-book icon"></i>
+            <h3>Total Books</h3>
+            <p id="books">0</p>
+        </div>
+
+        <div class="card" onclick="goTo('students.html')">
+            <i class="fas fa-users icon"></i>
+            <h3>Total Student</h3>
+            <p id="users">0</p>
+        </div>
+
+        <div class="card" onclick="goTo('transactions.html')">
+            <i class="fas fa-exchange-alt icon"></i>
+            <h3>Books Issued</h3>
+            <p id="issued">0</p>
+        </div>
+
+        <div class="card" onclick="goTo('fines.html')">
+            <i class="fas fa-clock icon"></i>
+            <h3>Overdue</h3>
+            <p id="overdue">0</p>
+        </div>
+
+    </div>
+
+    <!-- ================= RECENT ACTIVITY ================= -->
+    <div class="table-container">
+        <h3>Recent Activity</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Book</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <!-- 🔴 IMPORTANT: JS WILL FILL THIS -->
+            <tbody id="recentActivity">
+                <tr>
+                    <td colspan="4">Loading...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ================= OVERDUE SECTION ================= -->
+    <div class="table-container">
+        <h3>Overdue Students</h3>
+
+        <!-- 🔴 IMPORTANT: JS WILL FILL THIS -->
+        <div id="overdueList">
+            Loading...
+        </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>

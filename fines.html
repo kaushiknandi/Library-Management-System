@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fines – Library</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .page-wrap { padding: 28px; }
+        .page-title { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+        .page-sub { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 24px; }
+
+        /* SUMMARY STRIP */
+        .summary-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .summary-box {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 14px;
+            padding: 18px 20px;
+            color: #fff;
+        }
+        .summary-box .label { font-size: 12px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+        .summary-box .value { font-size: 26px; font-weight: 700; }
+        .summary-box.red .value { color: #f87171; }
+        .summary-box.amber .value { color: #fbbf24; }
+        .summary-box.purple .value { color: #c4b5fd; }
+
+        /* TABLE CARD */
+        .table-card {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .table-card-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .table-card-header h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+        .table-card-header h3 i { color: #f87171; }
+
+        .search-input {
+            background: rgba(255,255,255,0.13);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            width: 240px;
+        }
+        .search-input::placeholder { color: rgba(255,255,255,0.4); }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: rgba(0,0,0,0.15); }
+        th { padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.5); }
+        td { padding: 14px 16px; color: rgba(255,255,255,0.88); font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr { transition: background 0.15s; }
+        tbody tr:hover { background: rgba(255,255,255,0.05); }
+
+        .fine-amount {
+            font-size: 15px;
+            font-weight: 700;
+            color: #f87171;
+        }
+        .days-late {
+            display: inline-block;
+            background: rgba(239,68,68,0.2);
+            color: #fca5a5;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-pending {
+            display: inline-block;
+            background: rgba(245,158,11,0.2);
+            color: #fbbf24;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 56px 24px;
+            color: rgba(255,255,255,0.4);
+        }
+        .empty-state i { font-size: 36px; margin-bottom: 12px; display: block; color: rgba(255,255,255,0.2); }
+        .empty-state p { font-size: 14px; }
+        .empty-state span { color: #34d399; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>📚 Library</h2>
+    <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="books.html"><i class="fas fa-book"></i> Books</a></li>
+        <li><a href="students.html"><i class="fas fa-users"></i> Students</a></li>
+        <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+        <li><a href="fines.html" style="color:#a78bfa"><i class="fas fa-money-bill"></i> Fines</a></li>
+        <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <h2>Fines</h2>
+        <div class="profile">Admin</div>
+        <button onclick="logout()" style="background:#ef4444;color:#fff">Logout</button>
+    </div>
+
+    <div class="page-wrap">
+        <div class="page-title">Fines & Overdue</div>
+        <div class="page-sub">Students with overdue books and pending fines</div>
+
+        <!-- SUMMARY -->
+        <div class="summary-strip">
+            <div class="summary-box red">
+                <div class="label"><i class="fas fa-exclamation-circle"></i> Overdue Students</div>
+                <div class="value" id="totalOverdue">–</div>
+            </div>
+            <div class="summary-box amber">
+                <div class="label"><i class="fas fa-calendar-times"></i> Total Late Days</div>
+                <div class="value" id="totalLateDays">–</div>
+            </div>
+            <div class="summary-box purple">
+                <div class="label"><i class="fas fa-rupee-sign"></i> Total Fines (₹)</div>
+                <div class="value" id="totalFines">–</div>
+            </div>
+        </div>
+
+        <!-- FINES TABLE -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <h3><i class="fas fa-fire"></i> Overdue Books</h3>
+                <input type="text" id="fineSearch" class="search-input" placeholder="🔍 Search student or roll no...">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Roll No</th>
+                        <th>Book</th>
+                        <th>Days Late</th>
+                        <th>Fine Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="fineTable">
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="fas fa-check-circle"></i>
+                                <p>No overdue books found</p>
+                                <span>All books are within the return deadline</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="fines.js"></script>
+<script>
+function logout() {
+    sessionStorage.removeItem("isLoggedIn");
+    window.location.href = "login.html";
+}
+
+// Extend loadFines to update summary strip
+const _origLoad = loadFines;
+async function loadFines() {
+    const searchEl = document.getElementById("fineSearch");
+    const search = searchEl ? searchEl.value.toLowerCase().trim() : "";
+    const res = await fetch(`http://localhost:3000/api/fines${search ? "?search=" + encodeURIComponent(search) : ""}`);
+    const fines = await res.json();
+
+    // Update summary
+    document.getElementById("totalOverdue").textContent = fines.length;
+    document.getElementById("totalLateDays").textContent = fines.reduce((s, f) => s + f.late_days, 0);
+    document.getElementById("totalFines").textContent = "₹" + fines.reduce((s, f) => s + f.fine, 0);
+
+    let html = "";
+    fines.forEach(item => {
+        html += `
+            <tr>
+                <td><strong>${item.student_name}</strong></td>
+                <td>${item.roll_no}</td>
+                <td>${item.book_title}</td>
+                <td><span class="days-late">${item.late_days} days</span></td>
+                <td><span class="fine-amount">₹${item.fine}</span></td>
+                <td><span class="status-pending">Pending</span></td>
+            </tr>`;
+    });
+
+    document.getElementById("fineTable").innerHTML = html || `
+        <tr><td colspan="6">
+            <div class="empty-state">
+                <i class="fas fa-check-circle"></i>
+                <p>No overdue books found</p>
+                <span>All books are within the return deadline</span>
+            </div>
+        </td></tr>`;
+}
+
+let se = document.getElementById("fineSearch");
+if (se) se.addEventListener("input", loadFines);
+loadFines();
+</script>
+</body>
+</html>

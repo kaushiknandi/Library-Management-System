@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Students – Library</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .page-wrap { padding: 28px; }
+        .page-title { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+        .page-sub { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 24px; }
+
+        /* SUMMARY STRIP */
+        .summary-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .summary-box {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 14px;
+            padding: 18px 20px;
+            color: #fff;
+        }
+        .summary-box .label { font-size: 12px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+        .summary-box .value { font-size: 26px; font-weight: 700; }
+        .summary-box.purple .value { color: #c4b5fd; }
+        .summary-box.green .value  { color: #34d399; }
+        .summary-box.amber .value  { color: #fbbf24; }
+
+        /* ADD STUDENT CARD */
+        .glass-card {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .glass-card h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .glass-card h3 i { color: #a78bfa; }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .form-row input {
+            flex: 1;
+            min-width: 160px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .form-row input::placeholder { color: rgba(255,255,255,0.5); }
+        .form-row input:focus { border-color: #a78bfa; }
+
+        .btn-add {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: #fff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            white-space: nowrap;
+        }
+        .btn-add:hover { opacity: 0.88; transform: translateY(-1px); }
+
+        /* TABLE CARD */
+        .table-card {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .table-card-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .table-card-header h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+        .table-card-header h3 i { color: #a78bfa; }
+
+        .student-count {
+            background: rgba(167,139,250,0.25);
+            color: #c4b5fd;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .search-input {
+            background: rgba(255,255,255,0.13);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            width: 220px;
+        }
+        .search-input::placeholder { color: rgba(255,255,255,0.4); }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: rgba(0,0,0,0.15); }
+        th { padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.5); }
+        td { padding: 14px 16px; color: rgba(255,255,255,0.88); font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        tbody tr { transition: background 0.15s; cursor: pointer; }
+        tbody tr:hover { background: rgba(255,255,255,0.07); }
+        tbody tr:last-child td { border-bottom: none; }
+
+        .issued-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .issued-none { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.45); }
+        .issued-some { background: rgba(167,139,250,0.2); color: #c4b5fd; }
+
+        .btn-edit, .btn-del {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-edit { background: rgba(99,102,241,0.3); color: #a5b4fc; margin-right: 6px; }
+        .btn-del  { background: rgba(239,68,68,0.25); color: #fca5a5; }
+        .btn-edit:hover, .btn-del:hover { opacity: 0.75; }
+
+        /* DETAIL PANEL */
+        .details-panel {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(167,139,250,0.4);
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            display: none;
+        }
+        .details-header {
+            padding: 16px 24px;
+            background: rgba(124,58,237,0.25);
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .details-header h3 { color: #e9d5ff; font-size: 15px; font-weight: 600; margin: 0; }
+        .btn-close {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-close:hover { background: rgba(255,255,255,0.25); }
+
+        .empty-state { text-align: center; padding: 56px 24px; color: rgba(255,255,255,0.4); }
+        .empty-state i { font-size: 36px; margin-bottom: 12px; display: block; color: rgba(255,255,255,0.2); }
+        .empty-state p { font-size: 14px; }
+
+        .avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: #fff;
+            margin-right: 10px; flex-shrink: 0;
+        }
+        .name-cell { display: flex; align-items: center; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>📚 Library</h2>
+    <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="books.html"><i class="fas fa-book"></i> Books</a></li>
+        <li><a href="students.html" style="color:#a78bfa"><i class="fas fa-users"></i> Students</a></li>
+        <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+        <li><a href="fines.html"><i class="fas fa-money-bill"></i> Fines</a></li>
+        <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <h2>Students</h2>
+        <div class="profile">Admin</div>
+        <button onclick="logout()" style="background:#ef4444;color:#fff">Logout</button>
+    </div>
+
+    <div class="page-wrap">
+        <div class="page-title">Students Management</div>
+        <div class="page-sub">Add, edit and manage your library's student records</div>
+
+        <!-- SUMMARY STRIP -->
+        <div class="summary-strip">
+            <div class="summary-box purple">
+                <div class="label"><i class="fas fa-users"></i> Total Students</div>
+                <div class="value" id="totalStudents">–</div>
+            </div>
+            <div class="summary-box green">
+                <div class="label"><i class="fas fa-book-open"></i> Books Issued</div>
+                <div class="value" id="totalIssued">–</div>
+            </div>
+            <div class="summary-box amber">
+                <div class="label"><i class="fas fa-user-check"></i> Active Borrowers</div>
+                <div class="value" id="activeBorrowers">–</div>
+            </div>
+        </div>
+
+        <!-- ADD STUDENT -->
+        <div class="glass-card">
+            <h3><i class="fas fa-user-plus"></i> Add New Student</h3>
+            <div class="form-row">
+                <input type="text" id="studentName" placeholder="Student Name">
+                <input type="text" id="rollNo" placeholder="Roll Number">
+                <input type="email" id="studentEmail" placeholder="Email (optional)">
+                <input type="password" id="studentPass" placeholder="Password (default: student123)">
+                <button class="btn-add" onclick="addStudent()"><i class="fas fa-plus"></i> Add Student</button>
+            </div>
+        </div>
+
+        <!-- STUDENT LIST -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <h3><i class="fas fa-list"></i> Student Directory</h3>
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                    <input type="text" id="studentSearch" class="search-input" placeholder="🔍 Search name or roll no...">
+                    <span class="student-count" id="studentCount">0 students</span>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Roll No</th>
+                        <th>Books Issued</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTable">
+                    <tr><td colspan="4"><div class="empty-state"><i class="fas fa-users"></i><p>No students yet.</p></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- STUDENT DETAIL PANEL -->
+        <div id="studentDetails" class="details-panel">
+            <div class="details-header">
+                <h3 id="studentDetailHeading"><i class="fas fa-book"></i> Issued Books</h3>
+                <button class="btn-close" onclick="document.getElementById('studentDetails').style.display='none'">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Issue Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="studentDetailsTable"></tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script src="students.js"></script>
+<script>
+function logout() {
+    sessionStorage.removeItem("isLoggedIn");
+    window.location.href = "login.html";
+}
+
+// ── Override loadStudents with polished UI ──────────────
+async function loadStudents() {
+    const search = document.getElementById("studentSearch")?.value.toLowerCase().trim() || "";
+    const res = await fetch(`${API}/students`);
+    const students = await res.json();
+
+    const filtered = search
+        ? students.filter(s =>
+            s.name.toLowerCase().includes(search) ||
+            s.roll_no.toLowerCase().includes(search))
+        : students;
+
+    // Summary stats
+    const totalIssued = students.reduce((sum, s) => sum + (s.issued_count || 0), 0);
+    const active = students.filter(s => s.issued_count > 0).length;
+    document.getElementById("totalStudents").textContent = students.length;
+    document.getElementById("totalIssued").textContent = totalIssued;
+    document.getElementById("activeBorrowers").textContent = active;
+    document.getElementById("studentCount").textContent =
+        filtered.length + " student" + (filtered.length !== 1 ? "s" : "");
+
+    if (!filtered.length) {
+        document.getElementById("studentTable").innerHTML = `
+            <tr><td colspan="4"><div class="empty-state">
+                <i class="fas fa-user-slash"></i>
+                <p>${search ? "No students match your search." : "No students yet. Add your first student above."}</p>
+            </div></td></tr>`;
+        return;
+    }
+
+    let html = "";
+    filtered.forEach(s => {
+        const initials = s.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+        const badgeClass = s.issued_count > 0 ? "issued-some" : "issued-none";
+        const safeName = s.name.replace(/'/g, "\\'");
+        html += `
+            <tr onclick="showStudentDetails('${s.roll_no}', '${safeName}')">
+                <td>
+                    <div class="name-cell">
+                        <div class="avatar">${initials}</div>
+                        <strong>${s.name}</strong>
+                    </div>
+                </td>
+                <td>${s.roll_no}</td>
+                <td><span class="issued-badge ${badgeClass}">${s.issued_count} book${s.issued_count !== 1 ? "s" : ""}</span></td>
+                <td>
+                    <button class="btn-edit" onclick="event.stopPropagation(); editStudent('${s.roll_no}', '${safeName}')">
+                        <i class="fas fa-pen"></i> Edit
+                    </button>
+                    <button class="btn-del" onclick="event.stopPropagation(); deleteStudent('${s.roll_no}')">
+                        <i class="fas fa-trash"></i> Del
+                    </button>
+                </td>
+            </tr>`;
+    });
+    document.getElementById("studentTable").innerHTML = html;
+}
+
+// ── Edit student name ───────────────────────────────────
+async function editStudent(rollNo, currentName) {
+    const newName = prompt("Edit Student Name", currentName);
+    if (!newName || !newName.trim()) return;
+    await fetch(`${API}/students/${rollNo}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newName.trim() })
+    });
+    loadStudents();
+}
+
+// ── Show student's book history ─────────────────────────
+async function showStudentDetails(rollNo, name) {
+    const res = await fetch(`${API}/students/${rollNo}/books`);
+    const books = await res.json();
+
+    let html = "";
+    books.forEach(b => {
+        const isOverdue = !b.return_date && b.due_date && new Date(b.due_date) < new Date();
+        const statusHtml = b.return_date
+            ? `<span style="background:rgba(16,185,129,0.2);color:#34d399;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">Returned</span>`
+            : isOverdue
+                ? `<span style="background:rgba(239,68,68,0.2);color:#f87171;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">Overdue</span>`
+                : `<span style="background:rgba(167,139,250,0.2);color:#c4b5fd;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">Active</span>`;
+        html += `
+            <tr>
+                <td><strong>${b.title || b.book_title || "–"}</strong></td>
+                <td>${b.author || "–"}</td>
+                <td>${b.issue_date ? new Date(b.issue_date).toLocaleDateString() : "–"}</td>
+                <td>${statusHtml}</td>
+            </tr>`;
+    });
+
+    document.getElementById("studentDetailHeading").innerHTML =
+        `<i class="fas fa-user-graduate"></i> ${name}'s Issued Books`;
+    document.getElementById("studentDetailsTable").innerHTML = html ||
+        `<tr><td colspan="4"><div class="empty-state" style="padding:32px;">
+            <i class="fas fa-book-open"></i>
+            <p>No books currently issued to this student.</p>
+        </div></td></tr>`;
+
+    document.getElementById("studentDetails").style.display = "block";
+    document.getElementById("studentDetails").scrollIntoView({ behavior: "smooth" });
+}
+
+// ── Search & init ───────────────────────────────────────
+document.getElementById("studentSearch").addEventListener("input", loadStudents);
+loadStudents();
+</script>
+
+</body>
+</html>

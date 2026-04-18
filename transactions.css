@@ -1,0 +1,53 @@
+.container {
+    padding: 20px;
+}
+
+.page-title {
+    margin-bottom: 20px;
+}
+
+.card {
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+.form-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.form-group input {
+    padding: 8px;
+    min-width: 200px;
+}
+
+.form-group button {
+    padding: 8px 15px;
+    cursor: pointer;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+.search-bar {
+    margin-bottom: 10px;
+}
+
+.search-bar input {
+    padding: 8px;
+    width: 250px;
+}
+td:nth-child(4) {
+    font-weight: 600;
+}

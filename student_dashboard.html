@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Dashboard – Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+/* ===== BASE ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Nunito", sans-serif;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  min-height: 100vh;
+  color: #fff;
+  display: flex;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 230px;
+  min-height: 100vh;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  padding: 28px 0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.sidebar-logo {
+  padding: 0 22px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 16px;
+}
+.sidebar-logo h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+}
+.sidebar-logo span {
+  display: block;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+.sidebar nav ul { list-style: none; padding: 0 12px; }
+.sidebar nav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.18s, color 0.18s;
+  margin-bottom: 4px;
+}
+.sidebar nav ul li a:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.sidebar nav ul li a.active {
+  background: linear-gradient(135deg, rgba(124,58,237,0.4), rgba(168,85,247,0.25));
+  color: #e9d5ff;
+  border: 1px solid rgba(167,139,250,0.25);
+}
+.sidebar nav ul li a i { width: 18px; text-align: center; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 22px 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.student-info-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.stu-avatar {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.stu-name { font-size: 13px; font-weight: 700; color: #fff; }
+.stu-role { font-size: 11px; color: rgba(255,255,255,0.45); }
+
+/* ===== MAIN ===== */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 100vh;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+  display: flex;
+  align-items: center;
+  padding: 20px 28px;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(16px);
+}
+.topbar h2 { font-size: 18px; font-weight: 800; flex: 1; }
+.topbar-name {
+  background: rgba(255,255,255,0.1);
+  padding: 7px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #c4b5fd;
+  font-weight: 600;
+}
+.btn-logout {
+  background: rgba(239,68,68,0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239,68,68,0.3);
+  padding: 7px 16px;
+  border-radius: 10px;
+  font-family: "Nunito", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-logout:hover { background: rgba(239,68,68,0.35); }
+
+/* ===== SECTIONS ===== */
+.section { display: none; padding: 28px; }
+.section.active { display: block; }
+
+.page-title { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+.page-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 26px; }
+
+/* ===== STAT CARDS ===== */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 22px 20px;
+  transition: transform 0.15s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-card .icon {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+.stat-card .label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+.stat-card .value {
+  font-size: 28px;
+  font-weight: 800;
+}
+.stat-card.blue .icon, .stat-card.blue .value { color: #60a5fa; }
+.stat-card.green .icon, .stat-card.green .value { color: #34d399; }
+.stat-card.red .icon, .stat-card.red .value { color: #f87171; }
+.stat-card.amber .icon, .stat-card.amber .value { color: #fbbf24; }
+
+/* ===== GLASS TABLES ===== */
+.table-card {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.table-card-header {
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.table-card-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.table-card-header h3 i { color: #a78bfa; }
+
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: rgba(0,0,0,0.15); }
+th {
+  padding: 11px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255,255,255,0.45);
+}
+td {
+  padding: 13px 16px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.14s; }
+tbody tr:hover { background: rgba(255,255,255,0.05); }
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.badge-green { background: rgba(16,185,129,0.2); color: #34d399; }
+.badge-red   { background: rgba(239,68,68,0.2);  color: #f87171; }
+.badge-amber { background: rgba(245,158,11,0.2); color: #fbbf24; }
+.badge-blue  { background: rgba(96,165,250,0.2); color: #93c5fd; }
+
+/* ===== SEARCH INPUT ===== */
+.search-input {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-family: "Nunito", sans-serif;
+  font-size: 13px;
+  outline: none;
+  width: 240px;
+  transition: border 0.2s;
+}
+.search-input::placeholder { color: rgba(255,255,255,0.35); }
+.search-input:focus { border-color: #a78bfa; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: rgba(255,255,255,0.35);
+}
+.empty-state i { font-size: 36px; display: block; margin-bottom: 12px; color: rgba(255,255,255,0.2); }
+.empty-state p { font-size: 14px; }
+
+/* ===== WELCOME CARD ===== */
+.welcome-card {
+  background: linear-gradient(135deg, rgba(124,58,237,0.35), rgba(168,85,247,0.2));
+  border: 1px solid rgba(167,139,250,0.3);
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.welcome-avatar {
+  width: 60px; height: 60px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(124,58,237,0.4);
+}
+.welcome-text h3 { font-size: 20px; font-weight: 800; }
+.welcome-text p { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+.welcome-roll {
+  margin-left: auto;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 8px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  color: #c4b5fd;
+  font-weight: 700;
+}
+
+/* ===== FINE SUMMARY ===== */
+.fine-amount { font-size: 15px; font-weight: 700; color: #f87171; }
+
+/* ===== LOADING ===== */
+.loading-row td { text-align: center; padding: 40px; color: rgba(255,255,255,0.4); font-size: 14px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 700px) {
+  .sidebar { display: none; }
+  .section { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <h2>📚 Library</h2>
+    <span>Student Portal</span>
+  </div>
+
+  <nav>
+    <ul>
+      <li><a href="#" class="active" onclick="showSection('dashboard', this)">
+        <i class="fas fa-home"></i> Dashboard
+      </a></li>
+      <li><a href="#" onclick="showSection('books', this)">
+        <i class="fas fa-book"></i> Browse Books
+      </a></li>
+      <li><a href="#" onclick="showSection('issued', this)">
+        <i class="fas fa-exchange-alt"></i> My Issued Books
+      </a></li>
+      <li><a href="#" onclick="showSection('fines', this)">
+        <i class="fas fa-money-bill-wave"></i> My Fines
+      </a></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="student-info-mini">
+      <div class="stu-avatar">🎓</div>
+      <div>
+        <div class="stu-name" id="sidebarName">Student</div>
+        <div class="stu-role">Student Account</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <h2 id="topbarTitle">Dashboard</h2>
+    <div class="topbar-name" id="topbarName">Student</div>
+    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+
+  <!-- ===== DASHBOARD SECTION ===== -->
+  <div id="sec-dashboard" class="section active">
+    <div class="welcome-card">
+      <div class="welcome-avatar">🎓</div>
+      <div class="welcome-text">
+        <h3>Welcome back, <span id="welcomeName">Student</span>!</h3>
+        <p>Check your issued books, fines, and browse the library catalogue.</p>
+      </div>
+      <div class="welcome-roll" id="welcomeRoll">Roll: –</div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card blue">
+        <div class="icon"><i class="fas fa-book-open"></i></div>
+        <div class="label">Books Issued</div>
+        <div class="value" id="dashIssued">–</div>
+      </div>
+      <div class="stat-card green">
+        <div class="icon"><i class="fas fa-check-circle"></i></div>
+        <div class="label">Books Returned</div>
+        <div class="value" id="dashReturned">–</div>
+      </div>
+      <div class="stat-card red">
+        <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="label">Overdue</div>
+        <div class="value" id="dashOverdue">–</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="icon"><i class="fas fa-rupee-sign"></i></div>
+        <div class="label">Total Fine (₹)</div>
+        <div class="value" id="dashFine">–</div>
+      </div>
+    </div>
+
+    <!-- Recent activity -->
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3><i class="fas fa-clock"></i> My Recent Activity</h3>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Book</th>
+            <th>Issue Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="dashActivity">
+          <tr class="loading-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== BOOKS SECTION ===== -->
+  <div id="sec-books" class="section">
+    <div class="page-title">Browse Books</div>
+    <div class="page-sub">Explore all books available in the library</div>
+
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3><i class="fas fa-book"></i> Book Catalogue</h3>
+        <input type="text" id="bookSearch" class="search-input" placeholder="🔍 Search title or author..." oninput="filterBooks()">
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Availability</th>
+          </tr>
+        </thead>
+        <tbody id="booksTable">
+          <tr class="loading-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== ISSUED BOOKS SECTION ===== -->
+  <div id="sec-issued" class="section">
+    <div class="page-title">My Issued Books</div>
+    <div class="page-sub">Books currently issued to you and your borrowing history</div>
+
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3><i class="fas fa-exchange-alt"></i> Issued Books</h3>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Book Title</th>
+            <th>Author</th>
+            <th>Issue Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="issuedTable">
+          <tr class="loading-row"><td colspan="5"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== FINES SECTION ===== -->
+  <div id="sec-fines" class="section">
+    <div class="page-title">My Fines</div>
+    <div class="page-sub">Overdue books and pending fine amounts</div>
+
+    <div class="stat-row" style="grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); max-width:600px;">
+      <div class="stat-card red">
+        <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="label">Overdue Books</div>
+        <div class="value" id="fineOverdueCount">–</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="icon"><i class="fas fa-calendar-times"></i></div>
+        <div class="label">Total Late Days</div>
+        <div class="value" id="fineTotalDays">–</div>
+      </div>
+      <div class="stat-card red">
+        <div class="icon"><i class="fas fa-rupee-sign"></i></div>
+        <div class="label">Total Fine (₹)</div>
+        <div class="value" id="fineTotalAmt">–</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3><i class="fas fa-fire"></i> Overdue Details</h3>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Book</th>
+            <th>Due Date</th>
+            <th>Days Late</th>
+            <th>Fine Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="finesTable">
+          <tr class="loading-row"><td colspan="5"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ===== GUARD: only students can access =====
+(function() {
+  if (!sessionStorage.getItem("studentLoggedIn")) {
+    window.location.href = "student_login.html";
+  }
+})();
+
+const API = "http://localhost:3000/api";
+
+// ===== STUDENT INFO =====
+const studentName  = sessionStorage.getItem("studentName")  || "Student";
+const studentRoll  = sessionStorage.getItem("studentRollNo") || "";
+const studentId    = sessionStorage.getItem("studentId")     || "";
+
+document.getElementById("sidebarName").textContent = studentName;
+document.getElementById("topbarName").textContent  = studentName;
+document.getElementById("welcomeName").textContent = studentName;
+document.getElementById("welcomeRoll").textContent = "Roll: " + (studentRoll || "–");
+
+// ===== NAVIGATION =====
+function showSection(name, el) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".sidebar nav a").forEach(a => a.classList.remove("active"));
+  document.getElementById("sec-" + name).classList.add("active");
+  if (el) el.classList.add("active");
+
+  const titles = { dashboard: "Dashboard", books: "Browse Books", issued: "My Issued Books", fines: "My Fines" };
+  document.getElementById("topbarTitle").textContent = titles[name] || "Dashboard";
+
+  // Lazy load
+  if (name === "books")   loadBooks();
+  if (name === "issued")  loadIssued();
+  if (name === "fines")   loadFines();
+
+  return false;
+}
+
+// ===== LOGOUT =====
+function logout() {
+  sessionStorage.removeItem("studentLoggedIn");
+  sessionStorage.removeItem("studentName");
+  sessionStorage.removeItem("studentRollNo");
+  sessionStorage.removeItem("studentId");
+  sessionStorage.removeItem("studentEmail");
+  window.location.href = "student_login.html";
+}
+
+// ===== HELPERS =====
+function fmtDate(d) {
+  if (!d) return "–";
+  return new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+}
+function isOverdue(dueDate) {
+  return new Date(dueDate) < new Date();
+}
+
+// ===== LOAD DASHBOARD =====
+async function loadDashboard() {
+  try {
+    // Fetch this student's transactions using roll_no filter
+    const txRes = await fetch(`${API}/transactions?roll_no=${encodeURIComponent(studentRoll)}`);
+    const txData = await txRes.json();
+    const txArr = Array.isArray(txData) ? txData : [];
+
+    const issued   = txArr.filter(t => t.status === "issued" || t.status === "Issued");
+    const returned = txArr.filter(t => t.status === "returned" || t.status === "Returned");
+    const overdue  = issued.filter(t => t.due_date && isOverdue(t.due_date));
+
+    // Fetch this student's fines using roll_no filter
+    const fRes  = await fetch(`${API}/fines?roll_no=${encodeURIComponent(studentRoll)}`);
+    const fData = await fRes.json();
+    const fArr  = Array.isArray(fData) ? fData : [];
+    const totalFine = fArr.reduce((s, f) => s + (f.fine || 0), 0);
+
+    document.getElementById("dashIssued").textContent   = issued.length;
+    document.getElementById("dashReturned").textContent = returned.length;
+    document.getElementById("dashOverdue").textContent  = overdue.length;
+    document.getElementById("dashFine").textContent     = "₹" + totalFine;
+
+    // Recent activity (last 5 tx)
+    const recent = txArr.slice(0, 5);
+    let html = "";
+    recent.forEach(t => {
+      const overD = t.due_date && isOverdue(t.due_date) && (t.status === "issued" || t.status === "Issued");
+      const statusBadge = overD
+        ? `<span class="badge badge-red">Overdue</span>`
+        : (t.status === "returned" || t.status === "Returned")
+        ? `<span class="badge badge-green">Returned</span>`
+        : `<span class="badge badge-blue">Issued</span>`;
+      html += `<tr>
+        <td><strong>${t.book_title || t.title || "–"}</strong></td>
+        <td>${fmtDate(t.issue_date)}</td>
+        <td>${fmtDate(t.due_date)}</td>
+        <td>${statusBadge}</td>
+      </tr>`;
+    });
+    document.getElementById("dashActivity").innerHTML = html || `<tr><td colspan="4" class="empty-state"><i class="fas fa-book-open"></i><p>No activity yet</p></td></tr>`;
+  } catch(e) {
+    document.getElementById("dashActivity").innerHTML = `<tr><td colspan="4" class="empty-state"><i class="fas fa-plug"></i><p>Could not load data. Is the server running?</p></td></tr>`;
+    document.getElementById("dashIssued").textContent = document.getElementById("dashReturned").textContent =
+    document.getElementById("dashOverdue").textContent = document.getElementById("dashFine").textContent = "–";
+  }
+}
+
+// ===== LOAD BOOKS =====
+let allBooks = [];
+async function loadBooks() {
+  try {
+    const res = await fetch(`${API}/books`);
+    allBooks = await res.json();
+    renderBooks(allBooks);
+  } catch(e) {
+    document.getElementById("booksTable").innerHTML = `<tr><td colspan="4" class="empty-state"><i class="fas fa-plug"></i><p>Could not load books</p></td></tr>`;
+  }
+}
+
+function renderBooks(books) {
+  if (!books.length) {
+    document.getElementById("booksTable").innerHTML = `<tr><td colspan="4" class="empty-state"><i class="fas fa-book-open"></i><p>No books found</p></td></tr>`;
+    return;
+  }
+  let html = "";
+  books.forEach(b => {
+    const avail = b.available ?? b.quantity;
+    const badgeCls = avail > 2 ? "badge-green" : avail > 0 ? "badge-amber" : "badge-red";
+    const availTxt = avail > 0 ? `${avail} available` : "Not available";
+    html += `<tr>
+      <td><strong>${b.title}</strong></td>
+      <td>${b.author}</td>
+      <td>${b.category || "–"}</td>
+      <td><span class="badge ${badgeCls}">${availTxt}</span></td>
+    </tr>`;
+  });
+  document.getElementById("booksTable").innerHTML = html;
+}
+
+function filterBooks() {
+  const q = document.getElementById("bookSearch").value.toLowerCase();
+  renderBooks(allBooks.filter(b =>
+    (b.title || "").toLowerCase().includes(q) ||
+    (b.author || "").toLowerCase().includes(q) ||
+    (b.category || "").toLowerCase().includes(q)
+  ));
+}
+
+// ===== LOAD ISSUED BOOKS =====
+async function loadIssued() {
+  try {
+    // Fetch only this student's transactions
+    const res = await fetch(`${API}/transactions?roll_no=${encodeURIComponent(studentRoll)}`);
+    const data = await res.json();
+    const arr = Array.isArray(data) ? data : [];
+
+    if (!arr.length) {
+      document.getElementById("issuedTable").innerHTML = `<tr><td colspan="5" class="empty-state"><i class="fas fa-book-open"></i><p>No books issued yet</p></td></tr>`;
+      return;
+    }
+
+    let html = "";
+    arr.forEach(t => {
+      const isRetd = t.status === "returned" || t.status === "Returned";
+      const overD  = !isRetd && t.due_date && isOverdue(t.due_date);
+      const statusBadge = isRetd
+        ? `<span class="badge badge-green">Returned</span>`
+        : overD
+        ? `<span class="badge badge-red">Overdue</span>`
+        : `<span class="badge badge-blue">Active</span>`;
+      html += `<tr>
+        <td><strong>${t.book_title || t.title || "–"}</strong></td>
+        <td>${t.author || "–"}</td>
+        <td>${fmtDate(t.issue_date)}</td>
+        <td>${fmtDate(t.due_date)}</td>
+        <td>${statusBadge}</td>
+      </tr>`;
+    });
+    document.getElementById("issuedTable").innerHTML = html;
+  } catch(e) {
+    document.getElementById("issuedTable").innerHTML = `<tr><td colspan="5" class="empty-state"><i class="fas fa-plug"></i><p>Could not load data</p></td></tr>`;
+  }
+}
+
+// ===== LOAD FINES =====
+async function loadFines() {
+  try {
+    // Fetch only this student's fines
+    const res  = await fetch(`${API}/fines?roll_no=${encodeURIComponent(studentRoll)}`);
+    const data = await res.json();
+    const arr  = Array.isArray(data) ? data : [];
+
+    const totalDays = arr.reduce((s, f) => s + (f.late_days || 0), 0);
+    const totalAmt  = arr.reduce((s, f) => s + (f.fine || 0), 0);
+    document.getElementById("fineOverdueCount").textContent = arr.length;
+    document.getElementById("fineTotalDays").textContent    = totalDays;
+    document.getElementById("fineTotalAmt").textContent     = "₹" + totalAmt;
+
+    if (!arr.length) {
+      document.getElementById("finesTable").innerHTML = `<tr><td colspan="5" class="empty-state"><i class="fas fa-check-circle"></i><p>No fines! All books returned on time.</p></td></tr>`;
+      return;
+    }
+
+    let html = "";
+    arr.forEach(f => {
+      html += `<tr>
+        <td><strong>${f.book_title || "–"}</strong></td>
+        <td>${fmtDate(f.due_date)}</td>
+        <td><span class="badge badge-red">${f.late_days} days</span></td>
+        <td><span class="fine-amount">₹${f.fine}</span></td>
+        <td><span class="badge badge-amber">Pending</span></td>
+      </tr>`;
+    });
+    document.getElementById("finesTable").innerHTML = html;
+  } catch(e) {
+    document.getElementById("finesTable").innerHTML = `<tr><td colspan="5" class="empty-state"><i class="fas fa-plug"></i><p>Could not load fines</p></td></tr>`;
+  }
+}
+
+// ===== INIT =====
+loadDashboard();
+</script>
+</body>
+</html>

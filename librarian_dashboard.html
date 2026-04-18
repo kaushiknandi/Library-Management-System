@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Librarian Dashboard – Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+/* ===== BASE ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Nunito", sans-serif;
+  background: linear-gradient(135deg, #0a1628 0%, #1a2744 50%, #0d1f3c 100%);
+  min-height: 100vh;
+  color: #fff;
+  display: flex;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 235px;
+  min-height: 100vh;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(14,165,233,0.12);
+  padding: 28px 0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.sidebar-logo {
+  padding: 0 22px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 14px;
+}
+.sidebar-logo h2 { font-size: 20px; font-weight: 800; color: #fff; }
+.sidebar-logo span {
+  display: block;
+  font-size: 11px;
+  color: rgba(255,255,255,0.38);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin-top: 3px;
+}
+.sidebar nav ul { list-style: none; padding: 0 12px; }
+.sidebar nav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.18s, color 0.18s;
+  margin-bottom: 3px;
+}
+.sidebar nav ul li a:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.sidebar nav ul li a.active {
+  background: linear-gradient(135deg, rgba(2,132,199,0.4), rgba(14,165,233,0.22));
+  color: #bae6fd;
+  border: 1px solid rgba(14,165,233,0.25);
+}
+.sidebar nav ul li a i { width: 18px; text-align: center; }
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 22px 0;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.lib-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lib-avatar {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.lib-name { font-size: 13px; font-weight: 700; color: #fff; }
+.lib-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+/* ===== MAIN ===== */
+.main { flex: 1; overflow-y: auto; min-height: 100vh; }
+
+/* ===== TOPBAR ===== */
+.topbar {
+  display: flex;
+  align-items: center;
+  padding: 18px 28px;
+  background: rgba(0,0,0,0.25);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(16px);
+}
+.topbar h2 { font-size: 18px; font-weight: 800; flex: 1; }
+.topbar-name {
+  background: rgba(14,165,233,0.15);
+  border: 1px solid rgba(14,165,233,0.25);
+  padding: 7px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #7dd3fc;
+  font-weight: 700;
+}
+.btn-logout {
+  background: rgba(239,68,68,0.18);
+  color: #fca5a5;
+  border: 1px solid rgba(239,68,68,0.28);
+  padding: 7px 16px;
+  border-radius: 10px;
+  font-family: "Nunito", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-logout:hover { background: rgba(239,68,68,0.32); }
+
+/* ===== SECTIONS ===== */
+.section { display: none; padding: 28px; }
+.section.active { display: block; }
+.page-title { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+.page-sub { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 26px; }
+
+/* ===== STAT CARDS ===== */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  padding: 22px 20px;
+  transition: transform 0.15s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-card .icon { font-size: 22px; margin-bottom: 10px; }
+.stat-card .label { font-size: 11px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.stat-card .value { font-size: 28px; font-weight: 800; }
+.stat-card.blue  .icon, .stat-card.blue  .value { color: #38bdf8; }
+.stat-card.green .icon, .stat-card.green .value { color: #34d399; }
+.stat-card.red   .icon, .stat-card.red   .value { color: #f87171; }
+.stat-card.amber .icon, .stat-card.amber .value { color: #fbbf24; }
+.stat-card.cyan  .icon, .stat-card.cyan  .value { color: #67e8f9; }
+
+/* ===== GLASS CARD ===== */
+.glass-card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.glass-card h3 {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.glass-card h3 i { color: #38bdf8; }
+
+/* ===== FORM ROW ===== */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+.form-group-inline { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 140px; }
+.form-group-inline label { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; }
+.form-input {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 11px;
+  font-family: "Nunito", sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
+  width: 100%;
+}
+.form-input::placeholder { color: rgba(255,255,255,0.35); }
+.form-input:focus { border-color: #0ea5e9; background: rgba(14,165,233,0.1); }
+select.form-input option { background: #1a2744; color: #fff; }
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  color: #fff; border: none;
+  padding: 10px 22px;
+  border-radius: 11px;
+  font-family: "Nunito", sans-serif;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(14,165,233,0.3);
+}
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+.btn-success {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #fff; border: none;
+  padding: 10px 22px;
+  border-radius: 11px;
+  font-family: "Nunito", sans-serif;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+}
+.btn-success:hover { opacity: 0.88; transform: translateY(-1px); }
+
+.btn-sm {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-family: "Nunito", sans-serif;
+}
+.btn-return { background: rgba(16,185,129,0.25); color: #6ee7b7; }
+.btn-return:hover { opacity: 0.75; }
+.btn-edit   { background: rgba(99,102,241,0.25); color: #a5b4fc; margin-right: 5px; }
+.btn-edit:hover   { opacity: 0.75; }
+.btn-del    { background: rgba(239,68,68,0.22);  color: #fca5a5; }
+.btn-del:hover    { opacity: 0.75; }
+
+/* ===== TABLE CARD ===== */
+.table-card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.table-card-header {
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.table-card-header h3 {
+  font-size: 15px; font-weight: 700; color: #fff;
+  display: flex; align-items: center; gap: 8px;
+}
+.table-card-header h3 i { color: #38bdf8; }
+
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: rgba(0,0,0,0.18); }
+th { padding: 11px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: rgba(255,255,255,0.4); }
+td { padding: 13px 16px; font-size: 14px; color: rgba(255,255,255,0.82); border-bottom: 1px solid rgba(255,255,255,0.05); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.14s; }
+tbody tr:hover { background: rgba(255,255,255,0.04); }
+
+/* ===== SEARCH ===== */
+.search-input {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-family: "Nunito", sans-serif;
+  font-size: 13px;
+  outline: none;
+  width: 230px;
+  transition: border 0.2s;
+}
+.search-input::placeholder { color: rgba(255,255,255,0.3); }
+.search-input:focus { border-color: #0ea5e9; }
+
+/* ===== BADGES ===== */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge-green  { background: rgba(16,185,129,0.2); color: #34d399; }
+.badge-red    { background: rgba(239,68,68,0.2);  color: #f87171; }
+.badge-amber  { background: rgba(245,158,11,0.2); color: #fbbf24; }
+.badge-blue   { background: rgba(56,189,248,0.2); color: #7dd3fc; }
+.badge-purple { background: rgba(167,139,250,0.2); color: #c4b5fd; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state { text-align: center; padding: 48px 24px; color: rgba(255,255,255,0.3); }
+.empty-state i { font-size: 34px; display: block; margin-bottom: 12px; color: rgba(255,255,255,0.18); }
+.empty-state p { font-size: 14px; }
+
+/* ===== TOAST ===== */
+#toast {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  background: rgba(16,185,129,0.9);
+  backdrop-filter: blur(12px);
+  color: #fff;
+  padding: 13px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  z-index: 999;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  animation: toastIn 0.3s ease;
+}
+#toast.error { background: rgba(239,68,68,0.9); }
+@keyframes toastIn { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+
+/* ===== WELCOME STRIP ===== */
+.welcome-strip {
+  background: linear-gradient(135deg, rgba(2,132,199,0.28), rgba(14,165,233,0.14));
+  border: 1px solid rgba(14,165,233,0.28);
+  border-radius: 18px;
+  padding: 24px 28px;
+  margin-bottom: 26px;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+}
+.welcome-ava {
+  width: 54px; height: 54px;
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 8px 20px rgba(14,165,233,0.4);
+  flex-shrink: 0;
+}
+.welcome-strip h3 { font-size: 19px; font-weight: 800; }
+.welcome-strip p  { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+
+/* ===== FINE AMOUNT ===== */
+.fine-amt { font-weight: 700; color: #f87171; font-size: 15px; }
+
+@media (max-width: 700px) {
+  .sidebar { display: none; }
+  .section { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <h2>📚 Library</h2>
+    <span>Librarian Portal</span>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="#" class="active" onclick="showSection('dashboard',this)"><i class="fas fa-home"></i> Dashboard</a></li>
+      <li><a href="#" onclick="showSection('issue',this)"><i class="fas fa-hand-holding-heart"></i> Issue / Return</a></li>
+      <li><a href="#" onclick="showSection('books',this)"><i class="fas fa-book"></i> Books</a></li>
+      <li><a href="#" onclick="showSection('students',this)"><i class="fas fa-users"></i> Students</a></li>
+      <li><a href="#" onclick="showSection('transactions',this)"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+      <li><a href="#" onclick="showSection('fines',this)"><i class="fas fa-money-bill-wave"></i> Fines</a></li>
+    </ul>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="lib-info">
+      <div class="lib-avatar">🗂️</div>
+      <div>
+        <div class="lib-name" id="sidebarName">Librarian</div>
+        <div class="lib-role">Librarian Account</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+  <div class="topbar">
+    <h2 id="topbarTitle">Dashboard</h2>
+    <div class="topbar-name" id="topbarName">Librarian</div>
+    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="sec-dashboard" class="section active">
+    <div class="welcome-strip">
+      <div class="welcome-ava">🗂️</div>
+      <div>
+        <h3>Welcome, <span id="welcomeName">Librarian</span>!</h3>
+        <p>Manage book issuances, returns, students and fines from here.</p>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card blue">
+        <div class="icon"><i class="fas fa-book"></i></div>
+        <div class="label">Total Books</div>
+        <div class="value" id="dashBooks">–</div>
+      </div>
+      <div class="stat-card cyan">
+        <div class="icon"><i class="fas fa-exchange-alt"></i></div>
+        <div class="label">Books Issued</div>
+        <div class="value" id="dashIssued">–</div>
+      </div>
+      <div class="stat-card green">
+        <div class="icon"><i class="fas fa-users"></i></div>
+        <div class="label">Total Students</div>
+        <div class="value" id="dashStudents">–</div>
+      </div>
+      <div class="stat-card red">
+        <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="label">Overdue</div>
+        <div class="value" id="dashOverdue">–</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="icon"><i class="fas fa-rupee-sign"></i></div>
+        <div class="label">Total Fines (₹)</div>
+        <div class="value" id="dashFines">–</div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3><i class="fas fa-clock"></i> Recent Transactions</h3>
+      </div>
+      <table>
+        <thead><tr><th>Student</th><th>Book</th><th>Issue Date</th><th>Due Date</th><th>Status</th></tr></thead>
+        <tbody id="dashTxTable"><tr><td colspan="5" class="empty-state"><i class="fas fa-spinner fa-spin"></i></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== ISSUE / RETURN ===== -->
+  <div id="sec-issue" class="section">
+    <div class="page-title">Issue / Return Books</div>
+    <div class="page-sub">Issue a book to a student or mark a book as returned</div>
+
+    <!-- Issue Book -->
+    <div class="glass-card">
+      <h3><i class="fas fa-hand-holding-heart"></i> Issue a Book</h3>
+      <div class="form-row">
+        <div class="form-group-inline">
+          <label>Roll Number</label>
+          <input type="text" id="issueRoll" class="form-input" placeholder="e.g. S001">
+        </div>
+        <div class="form-group-inline">
+          <label>Book ID or Title</label>
+          <input type="text" id="issueBook" class="form-input" placeholder="Book ID or exact title">
+        </div>
+        <div class="form-group-inline">
+          <label>Due Date</label>
+          <input type="date" id="issueDue" class="form-input">
+        </div>
+        <button class="btn-primary" onclick="issueBook()"><i class="fas fa-plus"></i> Issue</button>
+      </div>
+    </div>
+
+    <!-- Return Book -->
+    <div class="glass-card">
+      <h3><i class="fas fa-undo"></i> Return a Book</h3>
+      <div class="form-row">
+        <div class="form-group-inline">
+          <label>Transaction ID</label>
+          <input type="text" id="returnTxId" class="form-input" placeholder="Transaction ID">
+        </div>
+        <button class="btn-success" onclick="returnBook()"><i class="fas fa-check"></i> Mark Returned</button>
+      </div>
+      <p style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.35);">
+        <i class="fas fa-info-circle"></i> Check the Transactions tab to find the Transaction ID.
+      </p>
+    </div>
+
+    <!-- Active Issued Books -->
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3><i class="fas fa-list"></i> Currently Issued Books</h3>
+        <input type="text" id="activeSearch" class="search-input" placeholder="🔍 Search student or book..." oninput="filterActive()">
+      </div>
+      <table>
+        <thead><tr><th>Tx ID</th><th>Student</th><th>Roll No</th><th>Book</th><th>Issue Date</th><th>Due Date</th><th>Action</th></tr></thead>
+        <tbody id="activeTable"><tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== BOOKS ===== -->
+  <div id="sec-books" class="section">
+    <div class="page-title">Books Management</div>
+    <div class="page-sub">View and manage the library book inventory</div>
+
+    <div class="glass-card">
+      <h3><i class="fas fa-plus-circle"></i> Add New Book</h3>
+      <div class="form-row">
+        <div class="form-group-inline"><label>Title</label><input type="text" id="bTitle" class="form-input" placeholder="Book Title"></div>
+        <div class="form-group-inline"><label>Author</label><input type="text" id="bAuthor" class="form-input" placeholder="Author Name"></div>
+        <div class="form-group-inline"><label>Category</label><input type="text" id="bCategory" class="form-input" placeholder="Category"></div>
+        <div class="form-group-inline" style="max-width:120px;"><label>Quantity</label><input type="number" id="bQty" class="form-input" placeholder="Qty" min="1"></div>
+        <button class="btn-primary" onclick="addBook()"><i class="fas fa-plus"></i> Add</button>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3><i class="fas fa-book"></i> Book Inventory</h3>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <span id="bookCountBadge" style="background:rgba(56,189,248,0.2);color:#7dd3fc;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">0 books</span>
+          <input type="text" id="bookSearch" class="search-input" placeholder="🔍 Search..." oninput="filterBooks()">
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Title</th><th>Author</th><th>Category</th><th>Total</th><th>Available</th><th>Actions</th></tr></thead>
+        <tbody id="booksTable"><tr><td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== STUDENTS ===== -->
+  <div id="sec-students" class="section">
+    <div class="page-title">Students</div>
+    <div class="page-sub">View all registered students and their borrowing status</div>
+
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3><i class="fas fa-users"></i> Student List</h3>
+        <input type="text" id="stuSearch" class="search-input" placeholder="🔍 Search name or roll no..." oninput="filterStudents()">
+      </div>
+      <table>
+        <thead><tr><th>Name</th><th>Roll No</th><th>Email</th><th>Books Issued</th><th>Fines (₹)</th></tr></thead>
+        <tbody id="studentsTable"><tr><td colspan="5" class="empty-state"><i class="fas fa-spinner fa-spin"></i></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== TRANSACTIONS ===== -->
+  <div id="sec-transactions" class="section">
+    <div class="page-title">All Transactions</div>
+    <div class="page-sub">Complete history of book issuances and returns</div>
+
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3><i class="fas fa-exchange-alt"></i> Transaction History</h3>
+        <input type="text" id="txSearch" class="search-input" placeholder="🔍 Search..." oninput="filterTx()">
+      </div>
+      <table>
+        <thead><tr><th>ID</th><th>Student</th><th>Roll No</th><th>Book</th><th>Issue Date</th><th>Due Date</th><th>Return Date</th><th>Status</th></tr></thead>
+        <tbody id="txTable"><tr><td colspan="8" class="empty-state"><i class="fas fa-spinner fa-spin"></i></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== FINES ===== -->
+  <div id="sec-fines" class="section">
+    <div class="page-title">Fines & Overdue</div>
+    <div class="page-sub">All students with overdue books and pending fines</div>
+
+    <div class="stat-row" style="grid-template-columns:repeat(auto-fit,minmax(155px,1fr));max-width:580px;">
+      <div class="stat-card red">
+        <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="label">Overdue Students</div>
+        <div class="value" id="fineCount">–</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="icon"><i class="fas fa-calendar-times"></i></div>
+        <div class="label">Total Late Days</div>
+        <div class="value" id="fineDays">–</div>
+      </div>
+      <div class="stat-card red">
+        <div class="icon"><i class="fas fa-rupee-sign"></i></div>
+        <div class="label">Total Fines (₹)</div>
+        <div class="value" id="fineTotal">–</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3><i class="fas fa-fire"></i> Overdue Books</h3>
+        <input type="text" id="fineSearch" class="search-input" placeholder="🔍 Search student..." oninput="filterFines()">
+      </div>
+      <table>
+        <thead><tr><th>Student</th><th>Roll No</th><th>Book</th><th>Days Late</th><th>Fine Amount</th><th>Status</th></tr></thead>
+        <tbody id="finesTable"><tr><td colspan="6" class="empty-state"><i class="fas fa-spinner fa-spin"></i></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ===== GUARD =====
+(function() {
+  if (!sessionStorage.getItem("librarianLoggedIn")) {
+    window.location.href = "librarian_login.html";
+  }
+})();
+
+const API = "http://localhost:3000/api";
+const libName = sessionStorage.getItem("librarianName") || "Librarian";
+
+document.getElementById("sidebarName").textContent = libName;
+document.getElementById("topbarName").textContent  = libName;
+document.getElementById("welcomeName").textContent = libName;
+
+// ===== TOAST =====
+function toast(msg, isError = false) {
+  const el = document.getElementById("toast");
+  el.textContent = (isError ? "✗ " : "✓ ") + msg;
+  el.className = isError ? "error" : "";
+  el.style.display = "block";
+  setTimeout(() => el.style.display = "none", 3200);
+}
+
+// ===== NAVIGATION =====
+function showSection(name, el) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".sidebar nav a").forEach(a => a.classList.remove("active"));
+  document.getElementById("sec-" + name).classList.add("active");
+  if (el) el.classList.add("active");
+  const titles = { dashboard:"Dashboard", issue:"Issue / Return", books:"Books", students:"Students", transactions:"Transactions", fines:"Fines" };
+  document.getElementById("topbarTitle").textContent = titles[name] || "";
+  if (name === "issue")        loadActive();
+  if (name === "books")        loadBooks();
+  if (name === "students")     loadStudents();
+  if (name === "transactions") loadTransactions();
+  if (name === "fines")        loadFines();
+  return false;
+}
+
+function logout() {
+  sessionStorage.removeItem("librarianLoggedIn");
+  sessionStorage.removeItem("librarianName");
+  window.location.href = "librarian_login.html";
+}
+
+function fmtDate(d) {
+  if (!d) return "–";
+  return new Date(d).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" });
+}
+function isOverdue(due) { return new Date(due) < new Date(); }
+
+// ===== DASHBOARD =====
+async function loadDashboard() {
+  try {
+    const [bRes, sRes, txRes, fRes] = await Promise.all([
+      fetch(`${API}/books`),
+      fetch(`${API}/students`),
+      fetch(`${API}/transactions`),
+      fetch(`${API}/fines`)
+    ]);
+    const books   = await bRes.json();
+    const studs   = await sRes.json();
+    const txs     = await txRes.json();
+    const fines   = await fRes.json();
+
+    const issued  = Array.isArray(txs) ? txs.filter(t => t.status === "issued" || t.status === "Issued") : [];
+    const overdue = issued.filter(t => t.due_date && isOverdue(t.due_date));
+    const totalFine = Array.isArray(fines) ? fines.reduce((s,f) => s+(f.fine||0), 0) : 0;
+
+    document.getElementById("dashBooks").textContent    = Array.isArray(books) ? books.length : "–";
+    document.getElementById("dashIssued").textContent   = issued.length;
+    document.getElementById("dashStudents").textContent = Array.isArray(studs) ? studs.length : "–";
+    document.getElementById("dashOverdue").textContent  = overdue.length;
+    document.getElementById("dashFines").textContent    = "₹" + totalFine;
+
+    const recent = Array.isArray(txs) ? txs.slice(-7).reverse() : [];
+    let html = "";
+    recent.forEach(t => {
+      const isRetd = t.status === "returned" || t.status === "Returned";
+      const ov = !isRetd && t.due_date && isOverdue(t.due_date);
+      const badge = isRetd ? `<span class="badge badge-green">Returned</span>`
+                  : ov    ? `<span class="badge badge-red">Overdue</span>`
+                           : `<span class="badge badge-blue">Active</span>`;
+      html += `<tr>
+        <td><strong>${t.student_name||"–"}</strong></td>
+        <td>${t.book_title||t.title||"–"}</td>
+        <td>${fmtDate(t.issue_date)}</td>
+        <td>${fmtDate(t.due_date)}</td>
+        <td>${badge}</td>
+      </tr>`;
+    });
+    document.getElementById("dashTxTable").innerHTML = html ||
+      `<tr><td colspan="5" class="empty-state"><i class="fas fa-inbox"></i><p>No transactions yet</p></td></tr>`;
+  } catch(e) {
+    document.getElementById("dashTxTable").innerHTML =
+      `<tr><td colspan="5" class="empty-state"><i class="fas fa-plug"></i><p>Could not connect to server</p></td></tr>`;
+  }
+}
+
+// ===== ISSUE BOOK =====
+async function issueBook() {
+  const roll    = document.getElementById("issueRoll").value.trim();
+  const book    = document.getElementById("issueBook").value.trim();
+  const dueDate = document.getElementById("issueDue").value;
+  if (!roll || !book || !dueDate) { toast("Fill all fields", true); return; }
+  try {
+    const res  = await fetch(`${API}/transactions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ roll_no: roll, book_identifier: book, due_date: dueDate })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      toast("Book issued successfully!");
+      document.getElementById("issueRoll").value = "";
+      document.getElementById("issueBook").value = "";
+      document.getElementById("issueDue").value  = "";
+      loadActive();
+    } else {
+      toast(data.message || "Failed to issue book", true);
+    }
+  } catch(e) {
+    toast("Server error", true);
+  }
+}
+
+// ===== RETURN BOOK =====
+async function returnBook(txId) {
+  const id = txId || document.getElementById("returnTxId").value.trim();
+  if (!id) { toast("Enter a Transaction ID", true); return; }
+  try {
+    const res  = await fetch(`${API}/transactions/${id}/return`, { method: "PUT" });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      toast("Book returned successfully!");
+      if (!txId) document.getElementById("returnTxId").value = "";
+      loadActive();
+    } else {
+      toast(data.message || "Failed to return book", true);
+    }
+  } catch(e) { toast("Server error", true); }
+}
+
+// ===== ACTIVE ISSUED =====
+let allActive = [];
+async function loadActive() {
+  try {
+    const res = await fetch(`${API}/transactions`);
+    const data = await res.json();
+    allActive = Array.isArray(data) ? data.filter(t => t.status === "issued" || t.status === "Issued") : [];
+    renderActive(allActive);
+  } catch(e) {
+    document.getElementById("activeTable").innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-plug"></i><p>Could not load</p></td></tr>`;
+  }
+}
+function renderActive(arr) {
+  if (!arr.length) {
+    document.getElementById("activeTable").innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-check-circle"></i><p>No active issuances</p></td></tr>`;
+    return;
+  }
+  let html = "";
+  arr.forEach(t => {
+    const ov = t.due_date && isOverdue(t.due_date);
+    const badge = ov ? `<span class="badge badge-red">Overdue</span>` : `<span class="badge badge-blue">Active</span>`;
+    html += `<tr>
+      <td><strong>#${t.id}</strong></td>
+      <td>${t.student_name||"–"}</td>
+      <td>${t.roll_no||"–"}</td>
+      <td>${t.book_title||t.title||"–"}</td>
+      <td>${fmtDate(t.issue_date)}</td>
+      <td>${fmtDate(t.due_date)} ${badge}</td>
+      <td><button class="btn-sm btn-return" onclick="returnBook(${t.id})"><i class="fas fa-undo"></i> Return</button></td>
+    </tr>`;
+  });
+  document.getElementById("activeTable").innerHTML = html;
+}
+function filterActive() {
+  const q = document.getElementById("activeSearch").value.toLowerCase();
+  renderActive(allActive.filter(t =>
+    (t.student_name||"").toLowerCase().includes(q) ||
+    (t.book_title||t.title||"").toLowerCase().includes(q) ||
+    (t.roll_no||"").toLowerCase().includes(q)
+  ));
+}
+
+// ===== BOOKS =====
+let allBooks = [];
+async function loadBooks() {
+  try {
+    const res = await fetch(`${API}/books`);
+    allBooks = await res.json();
+    document.getElementById("bookCountBadge").textContent = allBooks.length + " book" + (allBooks.length !== 1 ? "s" : "");
+    renderBooks(allBooks);
+  } catch(e) {
+    document.getElementById("booksTable").innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-plug"></i><p>Could not load books</p></td></tr>`;
+  }
+}
+function renderBooks(arr) {
+  if (!arr.length) {
+    document.getElementById("booksTable").innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-book-open"></i><p>No books found</p></td></tr>`;
+    return;
+  }
+  let html = "";
+  arr.forEach(b => {
+    const avail = b.available ?? b.quantity;
+    const bc = avail > 2 ? "badge-green" : avail > 0 ? "badge-amber" : "badge-red";
+    html += `<tr>
+      <td><strong>${b.title}</strong></td>
+      <td>${b.author}</td>
+      <td>${b.category||"–"}</td>
+      <td>${b.quantity}</td>
+      <td><span class="badge ${bc}">${avail}</span></td>
+      <td>
+        <button class="btn-sm btn-edit" onclick="editBook(${b.id},'${b.title.replace(/'/g,"\\'")}','${b.author.replace(/'/g,"\\'")}','${(b.category||"").replace(/'/g,"\\'")}',${b.quantity})"><i class="fas fa-pen"></i> Edit</button>
+        <button class="btn-sm btn-del"  onclick="deleteBook(${b.id})"><i class="fas fa-trash"></i> Del</button>
+      </td>
+    </tr>`;
+  });
+  document.getElementById("booksTable").innerHTML = html;
+}
+function filterBooks() {
+  const q = document.getElementById("bookSearch").value.toLowerCase();
+  renderBooks(allBooks.filter(b =>
+    (b.title||"").toLowerCase().includes(q) ||
+    (b.author||"").toLowerCase().includes(q) ||
+    (b.category||"").toLowerCase().includes(q)
+  ));
+}
+async function addBook() {
+  const title    = document.getElementById("bTitle").value.trim();
+  const author   = document.getElementById("bAuthor").value.trim();
+  const category = document.getElementById("bCategory").value.trim();
+  const quantity = parseInt(document.getElementById("bQty").value);
+  if (!title || !author || !category || !quantity) { toast("Fill all fields", true); return; }
+  try {
+    const res = await fetch(`${API}/books`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ title, author, category, quantity })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      toast("Book added!");
+      document.getElementById("bTitle").value = document.getElementById("bAuthor").value =
+      document.getElementById("bCategory").value = document.getElementById("bQty").value = "";
+      loadBooks();
+    } else { toast(data.message || "Failed to add", true); }
+  } catch(e) { toast("Server error", true); }
+}
+async function editBook(id, title, author, category, qty) {
+  const nTitle  = prompt("Title",    title);    if (!nTitle)  return;
+  const nAuthor = prompt("Author",   author);   if (!nAuthor) return;
+  const nCat    = prompt("Category", category); if (!nCat)    return;
+  const nQty    = prompt("Quantity", qty);      if (!nQty)    return;
+  try {
+    await fetch(`${API}/books/${id}`, {
+      method:"PUT", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ title:nTitle, author:nAuthor, category:nCat, quantity:parseInt(nQty) })
+    });
+    toast("Book updated!"); loadBooks();
+  } catch(e) { toast("Server error", true); }
+}
+async function deleteBook(id) {
+  if (!confirm("Delete this book?")) return;
+  try {
+    await fetch(`${API}/books/${id}`, { method:"DELETE" });
+    toast("Book deleted!"); loadBooks();
+  } catch(e) { toast("Server error", true); }
+}
+
+// ===== STUDENTS =====
+let allStudents = [];
+async function loadStudents() {
+  try {
+    const res = await fetch(`${API}/students`);
+    allStudents = await res.json();
+    renderStudents(allStudents);
+  } catch(e) {
+    document.getElementById("studentsTable").innerHTML = `<tr><td colspan="5" class="empty-state"><i class="fas fa-plug"></i><p>Could not load students</p></td></tr>`;
+  }
+}
+function renderStudents(arr) {
+  if (!arr.length) {
+    document.getElementById("studentsTable").innerHTML = `<tr><td colspan="5" class="empty-state"><i class="fas fa-users"></i><p>No students found</p></td></tr>`;
+    return;
+  }
+  let html = "";
+  arr.forEach(s => {
+    html += `<tr>
+      <td><strong>${s.name||s.student_name||"–"}</strong></td>
+      <td>${s.roll_no||"–"}</td>
+      <td>${s.email||"–"}</td>
+      <td><span class="badge badge-blue">${s.issued_count ?? "–"}</span></td>
+      <td><span style="color:#f87171;font-weight:700;">₹${s.total_fine ?? 0}</span></td>
+    </tr>`;
+  });
+  document.getElementById("studentsTable").innerHTML = html;
+}
+function filterStudents() {
+  const q = document.getElementById("stuSearch").value.toLowerCase();
+  renderStudents(allStudents.filter(s =>
+    (s.name||s.student_name||"").toLowerCase().includes(q) ||
+    (s.roll_no||"").toLowerCase().includes(q) ||
+    (s.email||"").toLowerCase().includes(q)
+  ));
+}
+
+// ===== TRANSACTIONS =====
+let allTx = [];
+async function loadTransactions() {
+  try {
+    const res = await fetch(`${API}/transactions`);
+    allTx = await res.json();
+    renderTx(Array.isArray(allTx) ? [...allTx].reverse() : []);
+  } catch(e) {
+    document.getElementById("txTable").innerHTML = `<tr><td colspan="8" class="empty-state"><i class="fas fa-plug"></i><p>Could not load</p></td></tr>`;
+  }
+}
+function renderTx(arr) {
+  if (!arr.length) {
+    document.getElementById("txTable").innerHTML = `<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i><p>No transactions</p></td></tr>`;
+    return;
+  }
+  let html = "";
+  arr.forEach(t => {
+    const isRetd = t.status === "returned" || t.status === "Returned";
+    const ov = !isRetd && t.due_date && isOverdue(t.due_date);
+    const badge = isRetd ? `<span class="badge badge-green">Returned</span>`
+                : ov    ? `<span class="badge badge-red">Overdue</span>`
+                         : `<span class="badge badge-blue">Active</span>`;
+    html += `<tr>
+      <td><strong>#${t.id}</strong></td>
+      <td>${t.student_name||"–"}</td>
+      <td>${t.roll_no||"–"}</td>
+      <td>${t.book_title||t.title||"–"}</td>
+      <td>${fmtDate(t.issue_date)}</td>
+      <td>${fmtDate(t.due_date)}</td>
+      <td>${fmtDate(t.return_date)}</td>
+      <td>${badge}</td>
+    </tr>`;
+  });
+  document.getElementById("txTable").innerHTML = html;
+}
+function filterTx() {
+  const q = document.getElementById("txSearch").value.toLowerCase();
+  const filtered = (Array.isArray(allTx) ? [...allTx].reverse() : []).filter(t =>
+    (t.student_name||"").toLowerCase().includes(q) ||
+    (t.book_title||t.title||"").toLowerCase().includes(q) ||
+    (t.roll_no||"").toLowerCase().includes(q)
+  );
+  renderTx(filtered);
+}
+
+// ===== FINES =====
+let allFines = [];
+async function loadFines() {
+  try {
+    const res = await fetch(`${API}/fines`);
+    allFines = await res.json();
+    const arr = Array.isArray(allFines) ? allFines : [];
+    document.getElementById("fineCount").textContent = arr.length;
+    document.getElementById("fineDays").textContent  = arr.reduce((s,f) => s+(f.late_days||0), 0);
+    document.getElementById("fineTotal").textContent = "₹" + arr.reduce((s,f) => s+(f.fine||0), 0);
+    renderFines(arr);
+  } catch(e) {
+    document.getElementById("finesTable").innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-plug"></i><p>Could not load</p></td></tr>`;
+  }
+}
+function renderFines(arr) {
+  if (!arr.length) {
+    document.getElementById("finesTable").innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-check-circle"></i><p>No overdue books!</p></td></tr>`;
+    return;
+  }
+  let html = "";
+  arr.forEach(f => {
+    html += `<tr>
+      <td><strong>${f.student_name||"–"}</strong></td>
+      <td>${f.roll_no||"–"}</td>
+      <td>${f.book_title||"–"}</td>
+      <td><span class="badge badge-red">${f.late_days} days</span></td>
+      <td><span class="fine-amt">₹${f.fine}</span></td>
+      <td><span class="badge badge-amber">Pending</span></td>
+    </tr>`;
+  });
+  document.getElementById("finesTable").innerHTML = html;
+}
+function filterFines() {
+  const q = document.getElementById("fineSearch").value.toLowerCase();
+  renderFines((Array.isArray(allFines) ? allFines : []).filter(f =>
+    (f.student_name||"").toLowerCase().includes(q) ||
+    (f.roll_no||"").toLowerCase().includes(q)
+  ));
+}
+
+// ===== SET DEFAULT DUE DATE (14 days ahead) =====
+const d = new Date();
+d.setDate(d.getDate() + 14);
+document.getElementById("issueDue").value = d.toISOString().split("T")[0];
+
+// ===== INIT =====
+loadDashboard();
+</script>
+</body>
+</html>

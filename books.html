@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Books – Library</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .page-wrap { padding: 28px; }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        .page-sub { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 24px; }
+
+        /* ADD BOOK CARD */
+        .glass-card {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .glass-card h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .glass-card h3 i { color: #a78bfa; }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .form-row input {
+            flex: 1;
+            min-width: 140px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .form-row input::placeholder { color: rgba(255,255,255,0.5); }
+        .form-row input:focus { border-color: #a78bfa; }
+
+        .btn-add {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: #fff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            white-space: nowrap;
+        }
+        .btn-add:hover { opacity: 0.88; transform: translateY(-1px); }
+
+        /* TABLE CARD */
+        .table-card {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .table-card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .table-card-header h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .table-card-header h3 i { color: #a78bfa; }
+        .book-count {
+            background: rgba(167,139,250,0.25);
+            color: #c4b5fd;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: rgba(0,0,0,0.15); }
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: rgba(255,255,255,0.55);
+        }
+        td {
+            padding: 14px 16px;
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        tbody tr { transition: background 0.15s; cursor: pointer; }
+        tbody tr:hover { background: rgba(255,255,255,0.07); }
+        tbody tr:last-child td { border-bottom: none; }
+
+        .avail-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .avail-ok { background: rgba(16,185,129,0.2); color: #34d399; }
+        .avail-low { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .avail-none { background: rgba(239,68,68,0.2); color: #f87171; }
+
+        .btn-edit, .btn-del {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-edit { background: rgba(99,102,241,0.3); color: #a5b4fc; margin-right: 6px; }
+        .btn-del { background: rgba(239,68,68,0.25); color: #fca5a5; }
+        .btn-edit:hover, .btn-del:hover { opacity: 0.75; }
+
+        /* BOOK DETAILS PANEL */
+        .details-panel {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(167,139,250,0.4);
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            display: none;
+        }
+        .details-header {
+            padding: 16px 24px;
+            background: rgba(124,58,237,0.25);
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .details-header h3 { color: #e9d5ff; font-size: 15px; font-weight: 600; }
+        .btn-close {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-close:hover { background: rgba(255,255,255,0.25); }
+        .empty-state {
+            text-align: center;
+            padding: 48px;
+            color: rgba(255,255,255,0.4);
+            font-size: 14px;
+        }
+        .empty-state i { font-size: 32px; margin-bottom: 12px; display: block; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>📚 Library</h2>
+    <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="books.html" style="color:#a78bfa"><i class="fas fa-book"></i> Books</a></li>
+        <li><a href="students.html"><i class="fas fa-users"></i> Students</a></li>
+        <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+        <li><a href="fines.html"><i class="fas fa-money-bill"></i> Fines</a></li>
+        <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <h2>Books</h2>
+        <div class="profile">Admin</div>
+        <button onclick="logout()" style="background:#ef4444;color:#fff">Logout</button>
+    </div>
+
+    <div class="page-wrap">
+        <div class="page-title">Books Management</div>
+        <div class="page-sub">Add, edit and track your library's book inventory</div>
+
+        <!-- ADD BOOK -->
+        <div class="glass-card">
+            <h3><i class="fas fa-plus-circle"></i> Add New Book</h3>
+            <div class="form-row">
+                <input type="text" id="title" placeholder="Book Title">
+                <input type="text" id="author" placeholder="Author Name">
+                <input type="text" id="category" placeholder="Category">
+                <input type="number" id="quantity" placeholder="Quantity" min="1">
+                <button class="btn-add" onclick="addBook()"><i class="fas fa-plus"></i> Add Book</button>
+            </div>
+        </div>
+
+        <!-- BOOK LIST -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <h3><i class="fas fa-list"></i> Book Inventory</h3>
+                <span class="book-count" id="bookCount">0 books</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Total Qty</th>
+                        <th>Available</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bookTable">
+                    <tr><td colspan="6" class="empty-state"><i class="fas fa-book-open"></i>No books yet</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- BOOK DETAILS PANEL -->
+        <div id="bookDetails" class="details-panel">
+            <div class="details-header">
+                <h3 id="bookTitleHeading">Book Details</h3>
+                <button class="btn-close" onclick="document.getElementById('bookDetails').style.display='none'">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Roll No</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="bookDetailsTable"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="books.js"></script>
+<script>
+function logout() {
+    sessionStorage.removeItem("isLoggedIn");
+    window.location.href = "login.html";
+}
+
+// Override loadBooks to update count
+const _origLoad = loadBooks;
+async function loadBooks() {
+    const res = await fetch("http://localhost:3000/api/books");
+    const books = await res.json();
+    const issued_res = await fetch("http://localhost:3000/api/books");
+    document.getElementById("bookCount").textContent = books.length + " book" + (books.length !== 1 ? "s" : "");
+
+    let html = "";
+    books.forEach(book => {
+        const avail = book.available;
+        let badgeClass = avail > 2 ? "avail-ok" : avail > 0 ? "avail-low" : "avail-none";
+        html += `
+            <tr onclick="showBookDetails('${book.title.replace(/'/g,"\\'")}')">
+                <td><strong>${book.title}</strong></td>
+                <td>${book.author}</td>
+                <td>${book.category}</td>
+                <td>${book.quantity}</td>
+                <td><span class="avail-badge ${badgeClass}">${avail}</span></td>
+                <td>
+                    <button class="btn-edit" onclick="event.stopPropagation(); editBook(${book.id}, '${book.title.replace(/'/g,"\\'")}', '${book.author.replace(/'/g,"\\'")}', '${book.category.replace(/'/g,"\\'")}', ${book.quantity})"><i class="fas fa-pen"></i> Edit</button>
+                    <button class="btn-del" onclick="event.stopPropagation(); deleteBook(${book.id})"><i class="fas fa-trash"></i> Del</button>
+                </td>
+            </tr>`;
+    });
+    document.getElementById("bookTable").innerHTML = html || `<tr><td colspan="6" style="text-align:center;padding:40px;color:rgba(255,255,255,0.4)"><i class="fas fa-book-open" style="font-size:28px;display:block;margin-bottom:10px"></i>No books yet. Add your first book above.</td></tr>`;
+}
+loadBooks();
+</script>
+</body>
+</html>

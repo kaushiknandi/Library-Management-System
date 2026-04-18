@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transactions – Library</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .page-wrap { padding: 28px; }
+        .page-title { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+        .page-sub { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 24px; }
+
+        .glass-card {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .glass-card h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .glass-card h3 i { color: #a78bfa; }
+
+        .issue-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 2fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+        @media(max-width:900px) {
+            .issue-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .field-group { display: flex; flex-direction: column; gap: 6px; }
+        .field-group label { font-size: 12px; color: rgba(255,255,255,0.55); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .field-group input {
+            background: rgba(255,255,255,0.13);
+            border: 1px solid rgba(255,255,255,0.22);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .field-group input::placeholder { color: rgba(255,255,255,0.4); }
+        .field-group input:focus { border-color: #a78bfa; }
+        .field-group input[readonly] { opacity: 0.7; cursor: not-allowed; }
+
+        .book-search-wrapper { position: relative; }
+        .book-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #2d1b69;
+            border: 1px solid rgba(167,139,250,0.3);
+            border-radius: 10px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 50;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            margin-top: 4px;
+        }
+        .book-dropdown div {
+            padding: 10px 14px;
+            color: rgba(255,255,255,0.85);
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .book-dropdown div:hover { background: rgba(167,139,250,0.2); }
+
+        .btn-issue {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            height: 42px;
+        }
+        .btn-issue:hover { opacity: 0.88; transform: translateY(-1px); }
+
+        /* TABLE */
+        .table-card {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .table-card-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .table-card-header h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+        .table-card-header h3 i { color: #a78bfa; }
+        .search-input {
+            background: rgba(255,255,255,0.13);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            width: 240px;
+        }
+        .search-input::placeholder { color: rgba(255,255,255,0.4); }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: rgba(0,0,0,0.15); }
+        th { padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.5); }
+        td { padding: 14px 16px; color: rgba(255,255,255,0.88); font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr { transition: background 0.15s; }
+        tbody tr:hover { background: rgba(255,255,255,0.05); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-active { background: rgba(16,185,129,0.2); color: #34d399; }
+        .status-overdue { background: rgba(239,68,68,0.2); color: #f87171; }
+        .status-returned { background: rgba(107,114,128,0.25); color: #9ca3af; }
+        .status-late { background: rgba(245,158,11,0.2); color: #fbbf24; }
+
+        .btn-return {
+            background: rgba(16,185,129,0.2);
+            color: #34d399;
+            border: 1px solid rgba(16,185,129,0.3);
+            padding: 5px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-return:hover { background: rgba(16,185,129,0.35); }
+        .returned-text { color: rgba(255,255,255,0.4); font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>📚 Library</h2>
+    <ul>
+        <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="books.html"><i class="fas fa-book"></i> Books</a></li>
+        <li><a href="students.html"><i class="fas fa-users"></i> Students</a></li>
+        <li><a href="transactions.html" style="color:#a78bfa"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+        <li><a href="fines.html"><i class="fas fa-money-bill"></i> Fines</a></li>
+        <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <h2>Transactions</h2>
+        <div class="profile">Admin</div>
+        <button onclick="logout()" style="background:#ef4444;color:#fff">Logout</button>
+    </div>
+
+    <div class="page-wrap">
+        <div class="page-title">Transactions</div>
+        <div class="page-sub">Issue books to students and manage returns</div>
+
+        <!-- ISSUE BOOK -->
+        <div class="glass-card">
+            <h3><i class="fas fa-hand-holding-heart"></i> Issue a Book</h3>
+            <div class="issue-grid">
+                <div class="field-group">
+                    <label>Roll Number</label>
+                    <input type="text" id="rollNo" placeholder="e.g. CS001">
+                </div>
+                <div class="field-group">
+                    <label>Student Name</label>
+                    <input type="text" id="studentName" placeholder="Auto-filled" readonly>
+                </div>
+                <div class="field-group">
+                    <label>Search Book</label>
+                    <div class="book-search-wrapper">
+                        <input type="text" id="bookSearch" placeholder="Type book title...">
+                        <div id="bookList" class="book-dropdown"></div>
+                    </div>
+                </div>
+                <button class="btn-issue" onclick="issueBook()"><i class="fas fa-paper-plane"></i> Issue</button>
+            </div>
+        </div>
+
+        <!-- ISSUED BOOKS TABLE -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <h3><i class="fas fa-list-alt"></i> Issued Books</h3>
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search student, book, roll no...">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Book</th>
+                        <th>Issue Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="issuedTable">
+                    <tr><td colspan="5" style="text-align:center;padding:40px;color:rgba(255,255,255,0.4)">No transactions yet</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="transactions.js"></script>
+<script>
+function logout() {
+    sessionStorage.removeItem("isLoggedIn");
+    window.location.href = "login.html";
+}
+</script>
+</body>
+</html>
